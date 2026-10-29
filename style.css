@@ -1,105 +1,299 @@
-/* ===== NOVO CABEÇALHO ===== */
+/* ================================================= */
+/* NOVO TOPO ESTILO HORSE                            */
+/* ================================================= */
 
-.hero{
-    background:#030712;
-    color:white;
-    min-height:130px;
-    padding:25px 35px;
+.hero-header{
+    height:120px;
+    background:linear-gradient(
+        90deg,
+        #141d3a 0%,
+        #1d2f5f 100%
+    );
+
     display:flex;
     justify-content:space-between;
     align-items:center;
+
+    padding:0 35px;
+
+    color:white;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+
+    position:sticky;
+    top:0;
+    z-index:100;
 }
 
 .hero-left{
     display:flex;
-    gap:25px;
     align-items:center;
+    gap:20px;
 }
 
-.hero-logo{
-    width:120px;
-    height:80px;
-    border-radius:14px;
+.hero-icon{
+    width:65px;
+    height:65px;
+
     background:white;
-    color:black;
+
+    border-radius:16px;
+
     display:flex;
-    justify-content:center;
     align-items:center;
-    font-size:24px;
-    font-weight:900;
+    justify-content:center;
+
+    font-size:32px;
 }
 
-.hero h1{
+.hero-left h1{
     margin:0;
-    font-size:40px;
-    font-weight:700;
+
+    font-size:42px;
+
+    font-weight:800;
+
+    color:white;
 }
 
-.hero p{
-    margin:8px 0;
-    color:#c7d2fe;
-    font-size:17px;
-}
+.hero-left p{
+    margin:6px 0 0;
 
-.hero small{
-    color:#94a3b8;
+    color:#d1d9f3;
+
+    font-size:18px;
 }
 
 .hero-right{
     display:flex;
-    gap:15px;
+    align-items:center;
+    gap:20px;
 }
 
-.contact-btn{
-    background:#2563eb;
+/* BOTÃO */
+
+.hero-btn{
+    height:55px;
+
+    padding:0 25px;
+
+    border-radius:14px;
+
+    border:1px solid #ffffff30;
+
+    background:#4b5d85;
+
     color:white;
-    text-decoration:none;
-    padding:12px 20px;
-    border-radius:10px;
+
     font-weight:700;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+    transition:.2s;
 }
 
-.contact-btn:hover{
-    background:#1d4ed8;
+.hero-btn:hover{
+    background:#5d7099;
 }
 
-/* ===== TÍTULO DE SEÇÃO ===== */
+/* DATA */
 
-.section-title{
-    margin-top:35px;
-    margin-bottom:20px;
-    font-size:28px;
-    color:#172554;
+.update-box{
+
+    background:#324c77;
+
+    min-width:230px;
+
+    border-radius:16px;
+
+    padding:12px 20px;
+
+    text-align:center;
+
+    color:white;
 }
 
-/* ===== CARDS ===== */
+.update-box strong{
+
+    display:block;
+
+    font-size:24px;
+
+    font-weight:800;
+}
+
+.update-box span{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:#d7e2ff;
+
+    font-size:14px;
+}
+
+/* HORSE */
+
+.horse-box{
+
+    background:#000000;
+
+    color:#ffffff;
+
+    min-width:150px;
+
+    height:58px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:16px;
+
+    font-weight:900;
+
+    font-size:34px;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    box-shadow:0 4px 10px rgba(0,0,0,.3);
+}
+
+/* ================================================= */
+/* VISUAL DOS CARDS                                  */
+/* ================================================= */
 
 .kpis article{
-    transition:all .3s;
+
+    border-radius:18px;
+
+    transition:.25s;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
 .kpis article:hover{
+
     transform:translateY(-4px);
 }
 
-/* ===== GRÁFICOS ===== */
+/* ================================================= */
+/* GRÁFICOS                                          */
+/* ================================================= */
 
 .panel{
+
     border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.07);
+
+    transition:.25s;
 }
 
-/* ===== RODAPÉ ===== */
+.panel:hover{
+
+    box-shadow:0 15px 35px rgba(0,0,0,.10);
+}
+
+/* ================================================= */
+/* TÍTULOS                                           */
+/* ================================================= */
+
+.section-title{
+
+    margin:25px 0 18px;
+
+    font-size:30px;
+
+    font-weight:800;
+
+    color:#1e2b43;
+}
+
+/* ================================================= */
+/* RELATÓRIO                                         */
+/* ================================================= */
+
+.table-panel{
+
+    margin-top:20px;
+}
+
+/* ================================================= */
+/* RODAPÉ                                            */
+/* ================================================= */
 
 .footer{
+
     margin-top:40px;
-    background:#030712;
+
+    background:#111827;
+
     color:white;
+
     text-align:center;
+
     padding:25px;
+}
+
+.footer h3{
+    margin:0 0 10px;
 }
 
 .footer p{
     margin:5px;
-    color:#cbd5e1;
+    color:#d1d5db;
+}
+
+/* ================================================= */
+/* RESPONSIVO                                        */
+/* ================================================= */
+
+@media(max-width:1200px){
+
+    .hero-left h1{
+        font-size:30px;
+    }
+
+    .update-box{
+        min-width:180px;
+    }
+}
+
+@media(max-width:900px){
+
+    .hero-header{
+
+        height:auto;
+
+        padding:20px;
+
+        flex-direction:column;
+
+        gap:15px;
+    }
+
+    .hero-right{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .hero-left h1{
+        font-size:24px;
+    }
+
+    .hero-left p{
+        font-size:14px;
+    }
+
+    .horse-box{
+        font-size:24px;
+    }
 }
