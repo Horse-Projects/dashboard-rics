@@ -1,391 +1,381 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-
-    <meta charset="utf-8">
-
-    <meta name="viewport"
-          content="width=device-width,initial-scale=1">
-
-    <title>Dashboard de Compras Horse</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RICs EMA - Dashboard</title>
 
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 </head>
 
 <body>
 
-<header class="hero-header">
+    <!-- TOPO -->
+    <header class="hero-header">
 
-    <div class="hero-left">
+        <div class="header-left">
 
-        <div class="hero-icon">
-            📊
-        </div>
+            <div class="horse-logo">
+                HORSE
+            </div>
 
-        <div>
+            <div class="header-title">
 
-            <h1>DASHBOARD DE COMPRAS</h1>
+                <h1>RICs EMA</h1>
 
-            <p>
-                Requisições de Compra SAP • Horse
-            </p>
+                <p>
+                    Dashboard de Requisições de Compra SAP
+                </p>
 
-        </div>
-
-    </div>
-
-    <div class="hero-right">
-
-        <button id="openFile" class="hero-btn">
-            🔄 Atualizar Dados
-        </button>
-
-        <div class="update-box">
-
-            <strong id="updated">
-                Sem base
-            </strong>
-
-            <span>
-                Última atualização
-            </span>
+            </div>
 
         </div>
 
-        <div class="horse-box">
-            HORSE
-        </div>
+        <div class="header-right">
 
-    </div>
+            <input
+                type="file"
+                id="file"
+                accept=".xlsx,.xls,.csv"
+                hidden>
 
-</header>
-
-<div class="layout">
-
-    <aside>
-
-        <div class="filter-head">
-
-            <b>⚙ FILTROS</b>
-
-            <button id="clear">
-                Limpar
+            <button id="choose" class="top-btn">
+                📁 Escolher Arquivo
             </button>
 
+            <button id="openFile" class="top-btn">
+                🔄 Atualizar
+            </button>
+
+            <div class="update-box">
+
+                <strong id="updated">
+                    Sem base
+                </strong>
+
+                <span>
+                    Última atualização
+                </span>
+
+            </div>
+
+            <a
+                href="mailto:david-guilherme-rezende-dos.santos@horse.tech"
+                class="contact-btn">
+
+                📧 Contato
+
+            </a>
+
         </div>
 
-        <label>DATA DA SOLICITAÇÃO (DE)</label>
-        <input id="dateFrom" type="date">
+    </header>
 
-        <label>DATA DA SOLICITAÇÃO (ATÉ)</label>
-        <input id="dateTo" type="date">
+    <!-- CONTEÚDO -->
 
-        <hr>
+    <div class="layout">
 
-        <label>DATA DO PEDIDO (DE)</label>
-        <input id="orderFrom" type="date">
+        <!-- FILTROS -->
 
-        <label>DATA DO PEDIDO (ATÉ)</label>
-        <input id="orderTo" type="date">
+        <aside>
 
-        <hr>
+            <div class="filter-head">
 
-        <label>STATUS</label>
-        <select id="status">
-            <option value="">Todos</option>
-        </select>
+                <b>⚙ FILTROS</b>
 
-        <label>REQUISITANTE</label>
-        <select id="requester">
-            <option value="">Todos</option>
-        </select>
+                <button id="clear">
+                    Limpar
+                </button>
 
-        <label>CRIADO POR</label>
-        <select id="creator">
-            <option value="">Todos</option>
-        </select>
+            </div>
 
-        <label>FORNECEDOR</label>
-        <select id="supplier">
-            <option value="">Todos</option>
-        </select>
+            <label>DATA DA SOLICITAÇÃO (DE)</label>
+            <input id="dateFrom" type="date">
 
-        <label>CENTRO DE CUSTO</label>
-        <select id="cost">
-            <option value="">Todos</option>
-        </select>
+            <label>DATA DA SOLICITAÇÃO (ATÉ)</label>
+            <input id="dateTo" type="date">
 
-        <label>PESQUISAR</label>
+            <hr>
 
-        <input
-            id="search"
-            type="search"
-            placeholder="RIC, Pedido ou Material">
+            <label>DATA DO PEDIDO (DE)</label>
+            <input id="orderFrom" type="date">
 
-    </aside>
+            <label>DATA DO PEDIDO (ATÉ)</label>
+            <input id="orderTo" type="date">
 
-    <main>
+            <hr>
 
-        <div class="source">
+            <label>STATUS</label>
+            <select id="status">
+                <option value="">Todos</option>
+            </select>
 
-            <span>
+            <label>REQUISITANTE</label>
+            <select id="requester">
+                <option value="">Todos</option>
+            </select>
 
-                ● <b>Fonte de dados:</b>
+            <label>CRIADO POR</label>
+            <select id="creator">
+                <option value="">Todos</option>
+            </select>
 
-                <span id="fileName">
+            <label>FORNECEDOR</label>
+            <select id="supplier">
+                <option value="">Todos</option>
+            </select>
 
-                    Adicione uma planilha Excel
+            <label>CENTRO DE CUSTO</label>
+            <select id="cost">
+                <option value="">Todos</option>
+            </select>
+
+            <label>PESQUISA</label>
+
+            <input
+                id="search"
+                type="search"
+                placeholder="RIC, Material, Fornecedor...">
+
+        </aside>
+
+        <!-- PAINEL -->
+
+        <main>
+
+            <div class="source">
+
+                <span>
+
+                    📄 <b>Fonte:</b>
+
+                    <span id="fileName">
+                        Nenhuma planilha carregada
+                    </span>
 
                 </span>
 
-            </span>
+                <button id="addBase">
+                    Adicionar Base
+                </button>
 
-            <button id="addBase">
+            </div>
 
-                Adicionar Base
+            <!-- KPIs -->
+
+            <section class="kpis">
+
+                <article class="blue">
+                    <i>📋</i>
+                    <span>TOTAL DE RICs</span>
+                    <strong id="total">0</strong>
+                    <small id="items">0 itens</small>
+                </article>
+
+                <article class="green">
+                    <i>💰</i>
+                    <span>VALOR TOTAL</span>
+                    <strong id="value">R$ 0,00</strong>
+                    <small id="average">média R$ 0,00</small>
+                </article>
+
+                <article class="purple">
+                    <i>✅</i>
+                    <span>STATUS PRINCIPAL</span>
+                    <strong id="mainStatus">-</strong>
+                    <small id="mainStatusSub">sem registros</small>
+                </article>
+
+                <article class="orange">
+                    <i>⏳</i>
+                    <span>APROVAÇÃO MÉDIA</span>
+                    <strong id="approval">0 dias</strong>
+                    <small>tempo médio</small>
+                </article>
+
+                <article class="red">
+                    <i>📦</i>
+                    <span>COM PEDIDO</span>
+                    <strong id="orders">0</strong>
+                    <small id="ordersPct">0%</small>
+                </article>
+
+            </section>
+
+            <!-- GRÁFICOS -->
+
+            <h2 class="section-title">
+                📊 Dashboard Gerencial
+            </h2>
+
+            <section class="grid top">
+
+                <article class="panel">
+
+                    <h2>
+                        RICs POR DATA DE SOLICITAÇÃO
+                    </h2>
+
+                    <div class="chart">
+                        <canvas id="dateChart"></canvas>
+                    </div>
+
+                </article>
+
+                <article class="panel">
+
+                    <h2>
+                        VALOR POR STATUS
+                    </h2>
+
+                    <div class="chart">
+                        <canvas id="valueChart"></canvas>
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="grid bottom">
+
+                <article class="panel">
+
+                    <h2>
+                        VALOR POR REQUISITANTE
+                    </h2>
+
+                    <div class="chart">
+                        <canvas id="requesterChart"></canvas>
+                    </div>
+
+                </article>
+
+                <article class="panel">
+
+                    <h2>
+                        STATUS DAS RICs
+                    </h2>
+
+                    <div class="chart">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+
+                </article>
+
+                <article class="panel">
+
+                    <h2>
+                        PRINCIPAIS FORNECEDORES
+                    </h2>
+
+                    <div id="ranking" class="ranking"></div>
+
+                </article>
+
+            </section>
+
+            <!-- RELATÓRIO -->
+
+            <h2 class="section-title">
+                📑 Relatório Detalhado
+            </h2>
+
+            <section class="panel table-panel">
+
+                <div class="table-title">
+
+                    <h2>
+                        DETALHAMENTO DAS RICs
+                    </h2>
+
+                    <div>
+
+                        <span id="count">
+                            0 registros
+                        </span>
+
+                        <button id="export">
+                            Exportar CSV
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead id="head"></thead>
+
+                        <tbody id="body"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- MODAL -->
+
+    <div id="modal" class="modal">
+
+        <div class="modal-card">
+
+            <button id="close">×</button>
+
+            <div class="upload-icon">
+                📁
+            </div>
+
+            <h2>
+                Adicionar Base de Dados
+            </h2>
+
+            <p>
+                Selecione sua planilha Excel ou CSV.
+            </p>
+
+            <input
+                id="fileModal"
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                hidden>
+
+            <button id="chooseModal">
+
+                Selecionar Arquivo
+
+            </button>
+
+            <div id="drop">
+
+                Arraste sua planilha aqui
+
+            </div>
+
+            <p id="message"></p>
+
+            <button id="remove">
+
+                Remover Base
 
             </button>
 
         </div>
 
-        <section class="kpis">
-
-            <article class="blue">
-                <i>📋</i>
-                <span>TOTAL DE RICs</span>
-                <strong id="total">0</strong>
-                <small id="items">
-                    0 itens encontrados
-                </small>
-            </article>
-
-            <article class="green">
-                <i>💰</i>
-                <span>VALOR TOTAL</span>
-                <strong id="value">
-                    R$ 0,00
-                </strong>
-                <small id="average">
-                    média R$ 0,00
-                </small>
-            </article>
-
-            <article class="purple">
-                <i>✓</i>
-                <span>STATUS PRINCIPAL</span>
-                <strong id="mainStatus">
-                    —
-                </strong>
-                <small id="mainStatusSub">
-                    sem registros
-                </small>
-            </article>
-
-            <article class="orange">
-                <i>⌛</i>
-                <span>APROVAÇÃO MÉDIA</span>
-                <strong id="approval">
-                    0 dias
-                </strong>
-                <small>
-                    solicitação até aprovação
-                </small>
-            </article>
-
-            <article class="red">
-                <i>📦</i>
-                <span>COM PEDIDO</span>
-                <strong id="orders">
-                    0
-                </strong>
-                <small id="ordersPct">
-                    0% das RICs
-                </small>
-            </article>
-
-        </section>
-
-        <h2 class="section-title">
-            📊 Dashboard Gerencial
-        </h2>
-
-        <section class="grid top">
-
-            <article class="panel">
-
-                <h2>
-                    RICs POR DATA DE SOLICITAÇÃO
-                </h2>
-
-                <div class="chart">
-                    <canvas id="dateChart"></canvas>
-                </div>
-
-            </article>
-
-            <article class="panel">
-
-                <h2>
-                    VALOR POR STATUS
-                </h2>
-
-                <div class="chart">
-                    <canvas id="valueChart"></canvas>
-                </div>
-
-            </article>
-
-        </section>
-
-        <section class="grid bottom">
-
-            <article class="panel">
-
-                <h2>
-                    VALOR POR REQUISITANTE
-                </h2>
-
-                <div class="chart">
-                    <canvas id="requesterChart"></canvas>
-                </div>
-
-            </article>
-
-            <article class="panel">
-
-                <h2>
-                    STATUS DAS RICs
-                </h2>
-
-                <div class="chart">
-                    <canvas id="statusChart"></canvas>
-                </div>
-
-            </article>
-
-            <article class="panel">
-
-                <h2>
-                    PRINCIPAIS FORNECEDORES
-                </h2>
-
-                <div id="ranking"
-                     class="ranking">
-                </div>
-
-            </article>
-
-        </section>
-
-        <h2 class="section-title">
-            📑 Relatório Detalhado
-        </h2>
-
-        <section class="panel table-panel">
-
-            <div class="table-title">
-
-                <h2>
-                    DETALHAMENTO DAS RICs
-                </h2>
-
-                <div>
-
-                    <span id="count">
-                        0 registros
-                    </span>
-
-                    <button id="export">
-                        Exportar CSV
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div class="table-wrap">
-
-                <table>
-
-                    <thead id="head"></thead>
-
-                    <tbody id="body"></tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
-
-<footer class="footer">
-
-    <h3>
-        Dashboard de Compras Horse
-    </h3>
-
-    <p>
-        Desenvolvido por David Guilherme Rezende dos Santos
-    </p>
-
-    <p>
-        📧 David-guilherme-rezende-dos.santos@horse.tech
-    </p>
-
-</footer>
-
-<div id="modal" class="modal">
-
-    <div class="modal-card">
-
-        <button id="close">×</button>
-
-        <div class="upload-icon">
-            ↥
-        </div>
-
-        <h2>
-            Adicionar base de RICs
-        </h2>
-
-        <p>
-            Selecione sua planilha Excel ou CSV.
-        </p>
-
-        <input
-            id="file"
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            hidden>
-
-        <button id="choose">
-            Selecionar arquivo
-        </button>
-
-        <div id="drop">
-            ou arraste o arquivo aqui
-        </div>
-
-        <p id="message"></p>
-
-        <button id="remove">
-            Remover base salva
-        </button>
-
     </div>
 
-</div>
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
+
 </html>
