@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HORSE | Dashboard de RICs</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<aside class="side">
+  <div class="logo" id="logoHorse">HORSE</div>
+  <nav><a href="#kpis">Indicadores</a><a href="#graficos">Gráficos</a><a href="#tabela">Tabela</a></nav>
+  <label class="btn" for="arquivo">Carregar planilha</label>
+  <input type="file" id="arquivo" accept=".xlsx,.xls,.xlsm" hidden>
+  <label class="small">Aba da planilha<select id="aba"></select></label>
+  <label class="small">Cálculo do valor
+    <select id="metodo">
+      <option value="todos">Somar todos os itens</option>
+      <option value="unico">Um Valor RC por Requisição</option>
+    </select></label>
+  <p class="small" id="metodoAtual"></p>
+</aside>
+<main>
+  <div id="loading" class="loading" hidden>Processando planilha...</div>
+  <div id="msg" class="msg" hidden></div>
+  <section id="validacao" class="card" hidden></section>
+  <section id="kpis" class="kpis"></section>
+  <section class="card filtros">
+    <input id="busca" placeholder="Pesquisa geral...">
+    <label class="small">De<input type="date" id="dtIni"></label>
+    <label class="small">Até<input type="date" id="dtFim"></label>
+    <div id="filtrosSelect" class="grid-filtros"></div>
+    <button class="btn" id="limpar">Limpar filtros</button>
+    <span id="contador" class="small"></span>
+  </section>
+  <section id="graficos" class="graficos">
+    <div class="card"><h3>RICs por situação</h3><canvas id="g1"></canvas></div>
+    <div class="card"><h3>Valor RC por situação</h3><canvas id="g2"></canvas></div>
+    <div class="card"><h3>Valor RC por centro de custo (Top 10)</h3><canvas id="g3"></canvas></div>
+    <div class="card"><h3>Valor RC por requisitante (Top 10)</h3><canvas id="g4"></canvas></div>
+    <div class="card"><h3>Valor RC por fornecedor (Top 10)</h3><canvas id="g5"></canvas></div>
+    <div class="card"><h3>Solicitações por mês</h3><canvas id="g6"></canvas></div>
+    <div class="card"><h3>Tempo médio entre etapas (dias)</h3><canvas id="g7"></canvas><p class="small" id="g7info"></p></div>
+  </section>
+  <section id="tabela" class="card">
+    <div class="barra">
+      <select id="porPagina"><option>10</option><option selected>25</option><option>50</option><option>100</option></select>
+      <button class="btn" id="exportar">Exportar filtrados</button>
+      <span id="pagInfo" class="small"></span>
+      <button class="btn" id="ant">‹</button><button class="btn" id="prox">›</button>
+    </div>
+    <div class="scroll"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  </section>
+</main>
+<dialog id="detalhe"><button class="btn" id="fechar">Fechar</button><div id="detalheCorpo"></div></dialog>
+<script src="script.js"></script>
+</body>
+</html>
