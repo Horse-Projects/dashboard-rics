@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard de Gestão de Custos HORSE">
+  <title>Dashboard Gestão de Custos | HORSE</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon">📊</span><div><h1>DASHBOARD DE CUSTOS</h1><small>Requisições, pedidos e pagamentos</small></div></div>
+  <div class="header-actions">
+    <button id="btnImport" class="btn primary">📁 Carregar planilha</button>
+    <button id="btnUpdate" class="btn">↻ Atualizar dados</button>
+    <div class="update-box"><strong id="updateTime">--/--/---- --:--</strong><small>Última atualização</small></div>
+    <div class="horse-logo">HORSE</div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
+  </div>
+</header>
+<div id="statusBar" class="status info">Carregue uma planilha XLSX, XLS ou CSV para iniciar.</div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="filter-title"><strong>⚙ FILTROS</strong><button id="clearFilters" class="link-btn">Limpar</button></div>
+    <div id="filters"></div>
+  </aside>
+  <main class="content">
+    <section id="cards" class="cards"></section>
+    <section class="dashboard-grid">
+      <article class="panel span-2"><h2>💰 Valor por centro de custo</h2><div class="chart-wrap"><canvas id="costCenterChart"></canvas></div></article>
+      <article class="panel"><h2>📌 Status das RICs</h2><div class="chart-wrap"><canvas id="statusChart"></canvas></div></article>
+      <article class="panel"><h2>🏢 Top fornecedores</h2><div class="chart-wrap"><canvas id="supplierChart"></canvas></div></article>
+      <article class="panel span-2"><h2>📈 Evolução mensal do Valor RC</h2><div class="chart-wrap"><canvas id="trendChart"></canvas></div></article>
+    </section>
+    <section class="panel"><div class="section-head"><h2>🏆 Ranking executivo</h2><span id="resultCount">0 registros</span></div><div id="rankings" class="rankings"></div></section>
+    <section class="panel table-panel">
+      <div class="section-head"><h2>📋 Detalhamento dos custos</h2><div class="table-actions"><input id="tableSearch" type="search" placeholder="Pesquisar em todos os campos"><button id="exportExcel" class="btn small">Excel</button><button id="exportCSV" class="btn small">CSV</button><button id="exportPDF" class="btn small">PDF</button></div></div>
+      <div class="table-scroll"><table id="dataTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+      <div id="pagination" class="pagination"></div>
+    </section>
+  </main>
+</div>
+</body>
+</html>
