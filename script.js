@@ -2,16 +2,50 @@
 let rawData=[], filteredData=[], currentPage=1, sortState={column:"",direction:1};
 const rowsPerPage=20, charts={};
 const tableColumns=["Item","Item ReqC","Data da solicitação","Requisição de compra","Pedido","Data Pedido","Contrato básico","Imobilizado","Elemento PEP","Centro custo","Material","Ind","Perc","Status","Cont.Contábil","Qtd.solicitada","Texto breve material","Preço líq.pedido","Valor RC","Grupo de compradores","Fornecedor","Nome","Data de lançamento","Moeda","Requisitante","Nota Fiscal","Referência","Registro MIGO","Data MIGO","Fatura","Data de planejamento","Data de compensação","Doc.compensação","Aprovador 4 RC","Aprovador 5 RC"];
-const filterFields=[{key:"Data da solicitação",type:"date-range"},{key:"Data Pedido",type:"date-range"},{key:"Centro custo",type:"select"},{key:"Fornecedor",type:"select"},{key:"Requisitante",type:"select"},{key:"Status",type:"select"},{key:"Grupo de compradores",type:"select"},{key:"Aprovador 4 RC",type:"select"},{key:"Aprovador 5 RC",type:"select"},{key:"Material",type:"text"},{key:"Pedido",type:"text"},{key:"Requisição de compra",type:"text"}];
+const filterFields=[
+{key:"Data da solicitação",type:"date-range"},
+{key:"Centro custo",type:"select"},
+{key:"Fornecedor",type:"select"},
+{key:"Requisitante",type:"select"},
+{key:"Status",type:"select"},
+{key:"Grupo de compradores",type:"select"},
+{key:"Aprovador 4 RC",type:"select"},
+{key:"Aprovador 5 RC",type:"select"},
+{key:"Material",type:"text"},
+{key:"Pedido",type:"text"},
+{key:"Requisição de compra",type:"text"}
+];
 const $=s=>document.querySelector(s), normalize=s=>String(s??"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
 function resolveHeaders(rows){if(!rows.length)return rows;const expected=new Map(tableColumns.map(x=>[normalize(x),x]));return rows.map(r=>{const o={};Object.entries(r).forEach(([k,v])=>o[expected.get(normalize(k))||String(k).trim()]=v);return o})}
-function numberBR(v){if(typeof v==="number")return Number.isFinite(v)?v:0;if(v==null||v==="")return 0;let s=String(v).trim().replace(/R\$|\s/g,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,"");const n=Number(s);return Number.isFinite(n)?n:0}
+function numberBR(v){
+
+    if(v === null || v === undefined || v === "")
+        return 0;
+
+    if(typeof v === "number")
+        return v;
+
+    let s = String(v)
+        .trim()
+        .replace(/R\$/g,"")
+        .replace(/\s/g,"");
+
+    if(s.includes(",")){
+        s = s
+            .replace(/\./g,"")
+            .replace(",",".");
+    }
+
+    const n = Number(s);
+
+    return Number.isFinite(n) ? n : 0;
+}
 const currency=v=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(numberBR(v));
 function parseDate(v){if(!v)return null;if(v instanceof Date&&!isNaN(v))return v;if(typeof v==="number"){const p=XLSX.SSF.parse_date_code(v);return p?new Date(p.y,p.m-1,p.d):null}const s=String(v).trim();let m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1])}const d=new Date(s);return isNaN(d)?null:d}
 const dateBR=v=>{const d=parseDate(v);return d?d.toLocaleDateString("pt-BR"):String(v??"")};
 function showStatus(msg,type="info"){$("#statusBar").className=`status ${type}`;$("#statusBar").textContent=msg}
 $("#btnImport").onclick=()=>$("#fileInput").click();
-$("#fileInput").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const buffer=await file.arrayBuffer();const workbook=XLSX.read(buffer,{type:"array",cellDates:true});const sheet=workbook.Sheets[workbook.SheetNames[0]];rawData=resolveHeaders(XLSX.utils.sheet_to_json(sheet,{defval:"",raw:false}));if(!rawData.length)throw new Error("A primeira aba não possui dados.");filteredData=[...rawData];currentPage=1;buildFilters();updateAll();updateTime();showStatus(`${file.name} carregado com sucesso: ${rawData.length.toLocaleString("pt-BR")} registros.`)}catch(err){showStatus(`Não foi possível ler a planilha: ${err.message}`,"error")}finally{e.target.value=""}};
+$("#fileInput").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const buffer=await file.arrayBuffer();const workbook=XLSX.read(buffer,{type:"array",cellDates:true});const sheet=workbook.Sheets[workbook.SheetNames[0]];rawData=resolveHeaders(XLSX.utils.sheet_to_json(sheet,{defval:"",raw:true}));if(!rawData.length)throw new Error("A primeira aba não possui dados.");filteredData=[...rawData];currentPage=1;buildFilters();updateAll();updateTime();showStatus(`${file.name} carregado com sucesso: ${rawData.length.toLocaleString("pt-BR")} registros.`)}catch(err){showStatus(`Não foi possível ler a planilha: ${err.message}`,"error")}finally{e.target.value=""}};
 function buildFilters(){const box=$("#filters");box.innerHTML="";filterFields.forEach(f=>{const group=document.createElement("div");group.className="filter-group";const label=document.createElement("label");label.textContent=f.key;group.appendChild(label);if(f.type==="date-range"){["de","ate"].forEach(x=>{const i=document.createElement("input");i.type="date";i.dataset.field=f.key;i.dataset.bound=x;i.title=`${f.key} ${x}`;i.onchange=applyFilters;group.appendChild(i)})}else if(f.type==="select"){const s=document.createElement("select");s.dataset.field=f.key;s.innerHTML='<option value="">Todos</option>';[...new Set(rawData.map(r=>String(r[f.key]??"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt-BR",{numeric:true})).forEach(v=>s.add(new Option(v,v)));s.onchange=applyFilters;group.appendChild(s)}else{const i=document.createElement("input");i.type="text";i.placeholder=`Filtrar ${f.key}`;i.dataset.field=f.key;i.oninput=applyFilters;group.appendChild(i)}box.appendChild(group)})}
 function applyFilters(){const els=[...document.querySelectorAll("#filters [data-field]")];filteredData=rawData.filter(row=>els.every(el=>{if(!el.value)return true;const field=el.dataset.field;if(el.type==="date"){const d=parseDate(row[field]);if(!d)return false;const f=new Date(el.value+"T00:00:00");return el.dataset.bound==="de"?d>=f:d<=new Date(f.getFullYear(),f.getMonth(),f.getDate(),23,59,59)}return String(row[field]??"").toLowerCase().includes(el.value.toLowerCase())}));currentPage=1;updateAll()}
 $("#clearFilters").onclick=()=>{document.querySelectorAll("#filters input,#filters select").forEach(el=>el.value="");applyFilters()};
@@ -19,7 +53,31 @@ $("#btnUpdate").onclick=()=>{if(!rawData.length)return showStatus("Carregue uma 
 function updateTime(){$("#updateTime").textContent=new Date().toLocaleString("pt-BR")}
 function groupSum(field,data=filteredData){const m={};data.forEach(r=>{const k=String(r[field]??"").trim()||"Não informado";m[k]=(m[k]||0)+numberBR(r["Valor RC"])});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
 function groupCount(field){const m={};filteredData.forEach(r=>{const k=String(r[field]??"").trim()||"Não informado";m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
-function updateCards(){const total=filteredData.reduce((s,r)=>s+numberBR(r["Valor RC"]),0), cc=groupSum("Centro custo")[0], sup=groupSum("Fornecedor")[0], req=groupSum("Requisitante")[0];const blank=v=>!String(v??"").trim();const cards=[
+function updateCards(){
+
+const total=filteredData.reduce(
+    (s,r)=>s+numberBR(r["Valor RC"]),
+    0
+);
+
+console.log("TOTAL RC:",total);
+
+const testeLB=filteredData.filter(
+    r=>String(r["Requisitante"]||"")
+    .toUpperCase()==="LB18001"
+);
+
+console.log(
+    "LB18001:",
+    testeLB.reduce(
+        (s,r)=>s+numberBR(r["Valor RC"]),
+        0
+    )
+);
+
+const cc = groupSum("Centro custo")[0];
+const sup = groupSum("Fornecedor")[0];
+const req = groupSum("Requisitante")[0];const blank=v=>!String(v??"").trim();const cards=[
 ["📦","Total de registros",filteredData.length.toLocaleString("pt-BR"),"RICs encontradas","#3979ef"],["💰","Valor Total RC",currency(total),"Soma oficial do Valor RC","#11b781"],["🏭","Maior Centro de Custo",cc?.[0]||"-",cc?currency(cc[1]):"Sem dados","#8455ef"],["🏢","Maior Fornecedor",sup?.[0]||"-",sup?currency(sup[1]):"Sem dados","#f59b0b"],["👤","Maior Requisitante",req?.[0]||"-",req?currency(req[1]):"Sem dados","#ef4444"],["📊","Ticket Médio",currency(filteredData.length?total/filteredData.length:0),"Valor médio por registro","#06a6c8"],["🧾","Pedidos sem NF",filteredData.filter(r=>blank(r["Nota Fiscal"])).length,"Nota Fiscal não informada","#f97316"],["⏳","Pendentes de aprovação",filteredData.filter(r=>blank(r["Aprovador 4 RC"])||blank(r["Aprovador 5 RC"])).length,"Aprovador 4 ou 5 ausente","#a855f7"]];$("#cards").innerHTML=cards.map(c=>`<article class="card" style="--accent:${c[4]}"><span class="card-icon">${c[0]}</span><div class="card-title">${c[1]}</div><div class="card-value" title="${c[2]}">${c[2]}</div><div class="card-sub">${c[3]}</div></article>`).join("")}
 function drawChart(id,type,labels,values,label,colors){if(charts[id])charts[id].destroy();charts[id]=new Chart($("#"+id),{type,data:{labels,datasets:[{label,data:values,backgroundColor:colors||["#3979ef","#11b781","#8455ef","#f59b0b","#ef4444","#06a6c8"],borderColor:type==="line"?"#3979ef":"#fff",borderWidth:type==="line"?2:1,fill:type==="line",tension:.34}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:id==="costCenterChart"?"y":"x",plugins:{legend:{display:type==="doughnut",position:"bottom"},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${id==="statusChart"?c.raw:currency(c.raw)}`}}},scales:type==="doughnut"?{}:{y:{beginAtZero:true,ticks:{callback:v=>currency(v)}},x:{grid:{display:false}}}}})}
 function updateCharts(){const cc=groupSum("Centro custo").slice(0,10), st=groupCount("Status").slice(0,8), sp=groupSum("Fornecedor").slice(0,10);drawChart("costCenterChart","bar",cc.map(x=>x[0]),cc.map(x=>x[1]),"Valor RC");drawChart("statusChart","doughnut",st.map(x=>x[0]),st.map(x=>x[1]),"Registros");drawChart("supplierChart","bar",sp.map(x=>x[0]),sp.map(x=>x[1]),"Valor RC");const monthly={};filteredData.forEach(r=>{const d=parseDate(r["Data da solicitação"]);if(d){const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;monthly[k]=(monthly[k]||0)+numberBR(r["Valor RC"])}});const items=Object.entries(monthly).sort();drawChart("trendChart","line",items.map(x=>{const [y,m]=x[0].split("-");return `${m}/${y}`}),items.map(x=>x[1]),"Valor RC","#3979ef")}
